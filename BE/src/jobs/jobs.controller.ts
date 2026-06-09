@@ -18,9 +18,36 @@ import { JobsService } from './jobs.service';
 
 import type { Response } from 'express';
 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
+
+@ApiTags('Jobs')
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
+
+  @ApiOperation({
+  summary: 'Upload image',
+})
+@ApiConsumes(
+  'multipart/form-data',
+)
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      image: {
+        type: 'string',
+        format: 'binary',
+      },
+    },
+  },
+})
 
 @Post('upload')
 @UseInterceptors(
@@ -79,12 +106,12 @@ async uploadImage(
   );
 }
 
-@Get('test')
-test() {
-  return {
-    message: 'Jobs module works',
-  };
-}
+@ApiOperation({
+  summary: 'Get job status',
+})
+@ApiParam({
+  name: 'id',
+})
 
 @Get(':id')
 async getStatus(
@@ -92,6 +119,14 @@ async getStatus(
 ) {
   return this.jobsService.getStatus(id);
 }
+
+@ApiOperation({
+  summary:
+    'Download processed image',
+})
+@ApiParam({
+  name: 'id',
+})
 
 @Get(':id/download')
 async download(
