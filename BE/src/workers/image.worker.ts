@@ -8,29 +8,67 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
-console.log('Image Worker Started');
+console.log(
+  '================================',
+);
+console.log(
+  'Image Worker Started',
+);
+console.log(
+  '================================',
+);
 
 new Worker(
   'image-processing',
+
   async (job) => {
     const jobId = job.data.jobId;
-    const inputPath = job.data.filePath;
+    const inputPath =
+      job.data.filePath;
 
     try {
+      console.log('');
+      console.log(
+        'Worker mulai:',
+        jobId,
+      );
+
       await prisma.job.update({
         where: {
           id: jobId,
         },
         data: {
-          status: 'PROCESSING',
+          status:
+            'PROCESSING',
         },
       });
 
-      const outputPath = path.join(
-        'uploads',
-        'processed',
-        `${jobId}.webp`,
+      console.log(
+        'Status -> PROCESSING',
       );
+
+      console.log(
+        'Menunggu 10 detik...',
+      );
+
+      await new Promise(
+        (resolve) =>
+          setTimeout(
+            resolve,
+            10000,
+          ),
+      );
+
+      console.log(
+        'Resize gambar...',
+      );
+
+      const outputPath =
+        path.join(
+          'uploads',
+          'processed',
+          `${jobId}.webp`,
+        );
 
       await sharp(inputPath)
         .resize({
@@ -43,20 +81,48 @@ new Worker(
         })
         .toFile(outputPath);
 
+      console.log(
+        'Resize selesai',
+      );
+
+      console.log(
+        'Convert WebP selesai',
+      );
+
       await prisma.job.update({
         where: {
           id: jobId,
         },
         data: {
-          status: 'COMPLETED',
-          processedFile: outputPath,
+          status:
+            'COMPLETED',
+          processedFile:
+            outputPath,
         },
       });
 
       console.log(
-        `Job ${jobId} completed`,
+        'Status -> COMPLETED',
+      );
+
+      console.log(
+        'Job selesai:',
+        jobId,
+      );
+
+      console.log(
+        '================================',
       );
     } catch (error) {
+      console.log(
+        'Status -> FAILED',
+      );
+
+      console.log(
+        'Job gagal:',
+        jobId,
+      );
+
       await prisma.job.update({
         where: {
           id: jobId,
@@ -71,9 +137,15 @@ new Worker(
       });
 
       console.error(error);
+
+      console.log(
+        '================================',
+      );
     }
   },
+
   {
-    connection: redisConnection,
+    connection:
+      redisConnection,
   },
 );

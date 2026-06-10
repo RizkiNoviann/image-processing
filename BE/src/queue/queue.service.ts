@@ -15,6 +15,21 @@ export class QueueService {
     jobId: string,
     filePath: string,
   ) {
+    console.log(
+      '================================',
+    );
+    console.log(
+      'Job masuk queue:',
+      jobId,
+    );
+    console.log(
+      'File:',
+      filePath,
+    );
+    console.log(
+      '================================',
+    );
+
     await this.imageQueue.add(
       'process-image',
       {

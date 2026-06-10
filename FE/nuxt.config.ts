@@ -9,4 +9,9 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.API_BASE_URL || 'http://localhost:3001',
+    },
+  },
 });

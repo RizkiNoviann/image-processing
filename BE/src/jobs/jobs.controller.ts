@@ -93,7 +93,7 @@ export class JobsController {
     },
 
     limits: {
-      fileSize: 20 * 1024 * 1024,
+      fileSize: 21 * 1024 * 1024,
     },
   }),
 )
